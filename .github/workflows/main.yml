@@ -42,4 +42,4 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/Course-Management-Service:latest
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/course-management-service:latest
