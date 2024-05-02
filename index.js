@@ -1,11 +1,27 @@
 const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
+const cors = require("cors");
 const { connectToDatabase } = require('./database/index');
 
 app.use(bodyParser.json());
 
-app.use('/api/demo', require('./routes/demoRoute'));
+// middleware
+app.use(cors());
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ extended: true, limit: '50mb' }));
+
+//------
+app.use((req, res, next) => {
+  console.log(req.method, req.path);
+  next();
+});
+//-------
+
+app.use('/api/course', require('./routes/courseRoutes'));
+
+
+
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
