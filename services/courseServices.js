@@ -160,6 +160,7 @@ const updateCourseById = async (courseId, updatedCourseData) => {
       courseId,
       updatedCourseData
     );
+
     if (!updatedCourse) {
       return {
         status: 404,
@@ -362,14 +363,21 @@ const createResource = async (
       };
     }
     if (imagefile) {
+      //console.log("imagefile - ",imagefile)
       // Get the file name and file type from the image file
-      const { originalname, mimetype } = imagefile;
-      const filename = originalname.split(".").slice(0, -1).join(".");
+      //const { originalname, mimetype } = imagefile;
+      const originalname = imagefile[0].originalname;
+      const mimetype = imagefile[0].mimetype;
+
+      //console.log("originalname",imagefile[0].originalname);
+      //console.log("mimetype", imagefile.mimetype);
+
+      const filename = originalname;
       const filetype = mimetype.split("/")[1];
 
       // Upload the image file and get the URL
       imageurl = await uploadImage(
-        imagefile,
+        imagefile[0],
         courseId,
         lessonId,
         filetype,
@@ -379,13 +387,18 @@ const createResource = async (
 
     if (videofile) {
       // Get the file name and file type from the video file
-      const { originalname, mimetype } = videofile;
-      const filename = originalname.split(".").slice(0, -1).join(".");
+      //const { originalname, mimetype } = videofile;
+      //console.log("videofile - ",videofile)
+
+      const originalname = videofile[0].originalname;
+      const mimetype = videofile[0].mimetype;
+
+      const filename = originalname;
       const filetype = mimetype.split("/")[1];
 
       // Upload the video file and get the URL
       videourl = await uploadImage(
-        videofile,
+        videofile[0],
         courseId,
         lessonId,
         filetype,
@@ -426,9 +439,15 @@ const editResource = async (
   courseId,
   lessonId,
   resourceId,
-  updatedResourceData
+  title,
+  lecNotes,
+  imagefile,
+  videofile
 ) => {
   try {
+    let imageurl = null;
+    let videourl = null;
+
     // Check if courseId, lessonId, and resourceId are provided
     if (!courseId || !lessonId || !resourceId) {
       return {
@@ -438,20 +457,72 @@ const editResource = async (
       };
     }
 
-    // Check if updatedResourceData is provided
-    if (!updatedResourceData) {
+    // Check if resourceData is provided
+    if (!title && !lecNotes && !imagefile && !videofile) {
       return {
         status: 400,
-        message: "Failed to edit resource: Missing updated resource data.",
+        message: "Failed to create resource: Missing resource data.",
       };
     }
+
+    if (imagefile) {
+      //console.log("imagefile - ",imagefile)
+      // Get the file name and file type from the image file
+      //const { originalname, mimetype } = imagefile;
+      const originalname = imagefile[0].originalname;
+      const mimetype = imagefile[0].mimetype;
+
+      //console.log("originalname",imagefile[0].originalname);
+      //console.log("mimetype", imagefile.mimetype);
+
+      const filename = originalname;
+      const filetype = mimetype.split("/")[1];
+
+      // Upload the image file and get the URL
+      imageurl = await uploadImage(
+        imagefile[0],
+        courseId,
+        lessonId,
+        filetype,
+        filename
+      );
+    }
+
+    if (videofile) {
+      // Get the file name and file type from the video file
+      //const { originalname, mimetype } = videofile;
+      //console.log("videofile - ",videofile)
+
+      const originalname = videofile[0].originalname;
+      const mimetype = videofile[0].mimetype;
+
+      const filename = originalname;
+      const filetype = mimetype.split("/")[1];
+
+      // Upload the video file and get the URL
+      videourl = await uploadImage(
+        videofile[0],
+        courseId,
+        lessonId,
+        filetype,
+        filename
+      );
+    }
+
+    const resourceData = {
+      title: title || "",
+      lecNotes: lecNotes || "",
+      videoUrl: videourl || "",
+      imageUrl: imageurl || "",
+    };
 
     const updatedResource = await courseRepo.editResource(
       courseId,
       lessonId,
       resourceId,
-      updatedResourceData
+      resourceData
     );
+    
     if (!updatedResource) {
       return {
         status: 404,

@@ -1,7 +1,5 @@
 const courseService = require("../services/courseServices");
 
-
-
 const createCourse = async (req, res) => {
   try {
     const { title, description, instructor, price, duration } = req.body;
@@ -104,16 +102,19 @@ const getCourseById = async (req, res) => {
 const updateCourseById = async (req, res) => {
   try {
     const { courseId } = req.params;
-    const { title, description, instructor, price, duration } = req.body;
+    const { title, description, price, duration } = req.body;
 
-    const updatedCourseData = {
-      title,
-      description,
-      instructor,
-      price,
-      duration,
-    };
-    const response = await courseRepo.updateCourseById(
+    // Initialize an empty object to store the updated course data
+    const updatedCourseData = {};
+
+    // Check if each field is provided in the request body, and if so, add it to the updatedCourseData object
+    if (title) updatedCourseData.title = title;
+    if (description) updatedCourseData.description = description;
+    //if (instructor) updatedCourseData.instructor = instructor;
+    if (price) updatedCourseData.price = price;
+    if (duration) updatedCourseData.duration = duration;
+
+    const response = await courseService.updateCourseById(
       courseId,
       updatedCourseData
     );
@@ -133,7 +134,7 @@ const updateCourseById = async (req, res) => {
 const deleteCourseById = async (req, res) => {
   const { courseId } = req.params;
   try {
-    const response = await courseRepo.deleteCourseById(courseId);
+    const response = await courseService.deleteCourseById(courseId);
 
     // Send the appropriate response
     res.status(response.status).send({
@@ -171,7 +172,7 @@ const editLesson = async (req, res) => {
       title,
       description,
     };
-    const response = await courseRepo.editLesson(
+    const response = await courseService.editLesson(
       courseId,
       lessonId,
       updatedCourseData
@@ -205,16 +206,26 @@ const deleteLesson = async (req, res) => {
 
 const createResource = async (req, res) => {
   try {
-    const { courseId, lessonId, title, lecNotes, imagefile, videofile } =
-      req.body;
+    const { courseId, lessonId, title, lecNotes } = req.body;
+
+    let uploadedImage = null;
+    let uploadedVideo = null;
+
+    if (req.files["imagefile"]) {
+      uploadedImage = req.files["imagefile"];
+      //console.log(uploadedImage);
+    }
+    if (req.files["videofile"]) {
+      uploadedVideo = req.files["videofile"];
+    }
 
     const response = await courseService.createResource(
       courseId,
       lessonId,
       title,
       lecNotes,
-      imagefile,
-      videofile
+      uploadedImage,
+      uploadedVideo
     );
 
     res
@@ -229,17 +240,27 @@ const createResource = async (req, res) => {
 const editResource = async (req, res) => {
   try {
     const { courseId, lessonId, resourceId } = req.params;
-    const { title, description } = req.body;
+    const { title, lecNotes } = req.body;
 
-    const updatedCourseData = {
-      title,
-      description,
-    };
-    const response = await courseRepo.editResource(
+    let uploadedImage = null;
+    let uploadedVideo = null;
+
+    if (req.files["imagefile"]) {
+      uploadedImage = req.files["imagefile"];
+      //console.log(uploadedImage);
+    }
+    if (req.files["videofile"]) {
+      uploadedVideo = req.files["videofile"];
+    }
+
+    const response = await courseService.editResource(
       courseId,
       lessonId,
       resourceId,
-      updatedCourseData
+      title,
+      lecNotes,
+      uploadedImage,
+      uploadedVideo
     );
 
     // Send the appropriate response

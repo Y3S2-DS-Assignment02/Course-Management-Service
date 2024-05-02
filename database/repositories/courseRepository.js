@@ -69,7 +69,7 @@ const updateCourseById = async (courseId, updatedCourseData) => {
     // Update simple properties of the course (title, description, etc.)
     course.title = updatedCourseData.title || course.title;
     course.description = updatedCourseData.description || course.description;
-    course.instructor = updatedCourseData.instructor || course.instructor;
+    //course.instructor = updatedCourseData.instructor || course.instructor;
     course.price = updatedCourseData.price || course.price;
     course.duration = updatedCourseData.duration || course.duration;
     course.isApproved = updatedCourseData.isApproved || course.isApproved;
@@ -275,7 +275,7 @@ const editResource = async (
 
     // Save the course with the updated resource
     await course.save();
-
+  
     return resourceToUpdate;
   } catch (error) {
     console.error("Error editing resource:", error.message);

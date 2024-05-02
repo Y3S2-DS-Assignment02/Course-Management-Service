@@ -25,7 +25,7 @@ const uploadImage = async (file, courseId, lessonId, filetype, filename) => {
     const fileRef = ref(storage, `${courseId}/${lessonId}/${filetype}/${uniqueName}-${filename}`);
 
     // Upload the file to Firebase Storage
-    await uploadBytes(fileRef, file.buffer);
+    await uploadBytes(fileRef, file.buffer ,{ contentType: filetype });
 
     // Get the download URL of the uploaded file
     const fileUrl = await getDownloadURL(fileRef);
