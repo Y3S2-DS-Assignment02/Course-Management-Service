@@ -15,12 +15,14 @@ const {
   editResource,
   deleteResource,
 } = require("../controllers/courseController");
+const verifyRoles = require("../middleware/verifyRoles")
+const ROLES_LIST = require("../config/roleList")
 
 const upload = multer();
 const router = express.Router();
 
 router.post("/courses", createCourse);
-router.get("/courses", getAllCourses);
+router.get("/courses", verifyRoles(ROLES_LIST.INSTRUCTOR) , getAllCourses);
 router.get("/courses/approved/:isApproved", getCoursesByApproveStatus);
 router.get("/courses/instructor/:instructor", getCoursesByInstructor);
 router.get("/courses/:courseId", getCourseById);

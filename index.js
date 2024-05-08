@@ -3,6 +3,7 @@ const app = express();
 const bodyParser = require('body-parser');
 const cors = require("cors");
 const { connectToDatabase } = require('./database/index');
+const verifyJWT = require("./middleware/verifyJWT");
 
 app.use(bodyParser.json());
 
@@ -17,6 +18,8 @@ app.use((req, res, next) => {
   next();
 });
 //-------
+
+app.use(verifyJWT);
 
 app.use('/api/course', require('./routes/courseRoutes'));
 
