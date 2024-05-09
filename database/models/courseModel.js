@@ -67,6 +67,10 @@ const courseSchema = new mongoose.Schema({
     type: Boolean,
     default: false, // By default, courses are not approved
   },
+  isRejected: {
+    type: Boolean,
+    default: false, // By default, courses are not approved
+  },
   // learners: [{
   //     type: mongoose.Schema.Types.ObjectId,
   //     ref: 'User' // Reference to the User model representing learners

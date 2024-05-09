@@ -130,6 +130,35 @@ const updateCourseById = async (req, res) => {
   }
 };
 
+// Function to update a course by ID
+const approveOrRejecteCourse = async (req, res) => {
+  try {
+    const { courseId } = req.params;
+    const {isApproved, isRejected} = req.body;
+
+    // Initialize an empty object to store the updated course data
+    const updatedCourseData = {};
+
+    // Check if each field is provided in the request body, and if so, add it to the updatedCourseData object
+    if (isApproved) updatedCourseData.isApproved = isApproved;
+    if (isRejected) updatedCourseData.isRejected = isRejected;
+
+    const response = await courseService.updateCourseById(
+      courseId,
+      updatedCourseData
+    );
+
+    // Send the appropriate response
+    res.status(response.status).send({
+      data: response.data || {}, // Send the response data if available
+      message: response.message, // Default message if not provided
+    });
+  } catch (error) {
+    console.error("Error updating course:", error.message);
+    res.status(500).send({ data: {}, message: "Error updating course" });
+  }
+};
+
 // Function to delete a course by ID
 const deleteCourseById = async (req, res) => {
   const { courseId } = req.params;
@@ -300,6 +329,7 @@ module.exports = {
   getCoursesByInstructor,
   getCourseById,
   updateCourseById,
+  approveOrRejecteCourse,
   deleteCourseById,
   createLesson,
   editLesson,

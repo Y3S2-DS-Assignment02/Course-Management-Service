@@ -73,6 +73,7 @@ const updateCourseById = async (courseId, updatedCourseData) => {
     course.price = updatedCourseData.price || course.price;
     course.duration = updatedCourseData.duration || course.duration;
     course.isApproved = updatedCourseData.isApproved || course.isApproved;
+    course.isRejected = updatedCourseData.isRejected || course.isRejected;
 
     // Save the updated course
     await course.save();

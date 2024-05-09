@@ -19,7 +19,7 @@ app.use((req, res, next) => {
 });
 //-------
 
-app.use(verifyJWT);
+//app.use(verifyJWT);
 
 app.use('/api/course', require('./routes/courseRoutes'));
 
