@@ -90,6 +90,32 @@ const getCoursesByApproveStatus = async (isApproved) => {
   }
 };
 
+// Function to get courses by reject status
+const getCoursesByRejectStatus = async (isRejected) => {
+  try {
+    const courses = await courseRepo.getCoursesByRejectStatus(isRejected);
+    return {
+      status: 200,
+      message: `Courses with reject status ${
+        isRejected ? "rejected" : "not rejected"
+      } retrieved successfully.`,
+      data: courses,
+    };
+  } catch (error) {
+    console.error(
+      `Error retrieving ${isRejected ? "rejected" : "not rejected"} courses:`,
+      error.message
+    );
+    return {
+      status: 500,
+      message: `Failed to retrieve ${
+        isRejected ? "rejected" : "not rejected"
+      } courses: Internal server error.`,
+      error: error,
+    };
+  }
+};
+
 // Function to get courses by instructor
 const getCoursesByInstructor = async (instructorName) => {
   try {
@@ -522,7 +548,7 @@ const editResource = async (
       resourceId,
       resourceData
     );
-    
+
     if (!updatedResource) {
       return {
         status: 404,
@@ -844,6 +870,7 @@ module.exports = {
   createCourse,
   getAllCourses,
   getCoursesByApproveStatus,
+  getCoursesByRejectStatus,
   getCoursesByInstructor,
   getCourseById,
   updateCourseById,

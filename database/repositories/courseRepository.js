@@ -35,6 +35,17 @@ const getCoursesByApproveStatus = async (status) => {
   }
 };
 
+// Function to get courses by reject status
+const getCoursesByRejectStatus = async (status) => {
+  try {
+    const courses = await Course.find({ isRejected: status });
+    return courses;
+  } catch (error) {
+    console.log(error);
+    throw new Error("Error fetching courses by reject status");
+  }
+};
+
 // Function to get courses by instructor
 const getCoursesByInstructor = async (instructorId) => {
   try {
@@ -276,7 +287,7 @@ const editResource = async (
 
     // Save the course with the updated resource
     await course.save();
-  
+
     return resourceToUpdate;
   } catch (error) {
     console.error("Error editing resource:", error.message);
@@ -468,7 +479,7 @@ const addQuizQuestion = async (courseId, lessonId, quizId, questionData) => {
     const newQuestion = {
       question: questionData.question,
       options: questionData.options || [],
-      correctAnswerIndex: questionData.correctAnswerIndex,
+      answer: questionData.answer,
     };
 
     // Add the new question to the quiz's questions array
@@ -527,9 +538,8 @@ const editQuizQuestion = async (
       updatedQuestionData.question || questionToUpdate.question;
     questionToUpdate.options =
       updatedQuestionData.options || questionToUpdate.options;
-    questionToUpdate.correctAnswerIndex =
-      updatedQuestionData.correctAnswerIndex ||
-      questionToUpdate.correctAnswerIndex;
+    questionToUpdate.answer =
+      updatedQuestionData.answer || questionToUpdate.answer;
 
     // Save the course with the updated question
     await course.save();
@@ -589,6 +599,7 @@ module.exports = {
   createCourse,
   getAllCourses,
   getCoursesByApproveStatus,
+  getCoursesByRejectStatus,
   getCoursesByInstructor,
   getCourseById,
   updateCourseById,
@@ -604,5 +615,5 @@ module.exports = {
   deleteQuiz,
   addQuizQuestion,
   editQuizQuestion,
-  deleteQuizQuestion
+  deleteQuizQuestion,
 };

@@ -18,7 +18,7 @@ const resourceSchema = new mongoose.Schema({
 const quizQuestionSchema = new mongoose.Schema({
   question: String,
   options: [String],
-  correctAnswerIndex: Number,
+  answer: String,
 });
 
 const quizSchema = new mongoose.Schema({

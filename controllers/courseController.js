@@ -60,6 +60,27 @@ const getCoursesByApproveStatus = async (req, res) => {
   }
 };
 
+const getCoursesByRejectStatus = async (req, res) => {
+  const { isRejected } = req.params;
+  try {
+    const response = await courseService.getCoursesByRejectStatus(isRejected);
+    res
+      .status(response.status)
+      .json({ data: response.data, message: response.message });
+  } catch (error) {
+    console.error(
+      `Error retrieving ${isRejected ? "rejected" : "not rejected"} courses:`,
+      error.message
+    );
+    res.status(500).json({
+      data: {},
+      message: `Failed to retrieve ${
+        isRejected ? "rejected" : "not rejected"
+      } courses: Internal server error`,
+    });
+  }
+};
+
 const getCoursesByInstructor = async (req, res) => {
   const { instructor } = req.params;
   try {
@@ -104,6 +125,8 @@ const updateCourseById = async (req, res) => {
     const { courseId } = req.params;
     const { title, description, price, duration } = req.body;
 
+    console.log(title, description, price, duration);
+
     // Initialize an empty object to store the updated course data
     const updatedCourseData = {};
 
@@ -134,7 +157,7 @@ const updateCourseById = async (req, res) => {
 const approveOrRejecteCourse = async (req, res) => {
   try {
     const { courseId } = req.params;
-    const {isApproved, isRejected} = req.body;
+    const { isApproved, isRejected } = req.body;
 
     // Initialize an empty object to store the updated course data
     const updatedCourseData = {};
@@ -322,10 +345,138 @@ const deleteResource = async (req, res) => {
   }
 };
 
+const createQuiz = async (req, res) => {
+  try {
+    const { courseId, lessonId, title } = req.body;
+    const quizData = { title };
+
+    const response = await courseService.addQuiz(courseId, lessonId, quizData);
+
+    res
+      .status(response.status)
+      .send({ data: response.data || {}, message: response.message });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ data: {}, message: "Error creating quiz" });
+  }
+};
+
+const editQuiz = async (req, res) => {
+  try {
+    const { courseId, lessonId, quizId } = req.params;
+    const { title } = req.body;
+
+    const updatedCourseData = {
+      title,
+    };
+    const response = await courseService.editQuiz(
+      courseId,
+      lessonId,
+      quizId,
+      updatedCourseData
+    );
+
+    // Send the appropriate response
+    res.status(response.status).send({
+      data: response.data || {}, // Send the response data if available
+      message: response.message, // Default message if not provided
+    });
+  } catch (error) {
+    console.error("Error updating quiz:", error.message);
+    res.status(500).send({ data: {}, message: "Error updating quiz" });
+  }
+};
+
+const deleteQuiz = async (req, res) => {
+  try {
+    const { courseId, lessonId, quizId } = req.params;
+
+    const response = await courseService.deleteQuiz(courseId, lessonId, quizId);
+
+    res
+      .status(response.status)
+      .send({ data: response.data || {}, message: response.message });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ data: {}, message: "Error deleting Quiz" });
+  }
+};
+
+const createQuizQuestion = async (req, res) => {
+  try {
+    const { courseId, lessonId, quizId, question, options, answer } = req.body;
+    const quizData = { question, options, answer };
+
+    const response = await courseService.addQuizQuestion(
+      courseId,
+      lessonId,
+      quizId,
+      quizData
+    );
+
+    res
+      .status(response.status)
+      .send({ data: response.data || {}, message: response.message });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ data: {}, message: "Error creating quiz Question" });
+  }
+};
+
+const editQuizQuestion = async (req, res) => {
+  try {
+    const { courseId, lessonId, quizId, questionId } = req.params;
+    const { question, options, answer } = req.body;
+
+    const updatedCourseData = {
+      question,
+      options,
+      answer,
+    };
+    const response = await courseService.editQuizQuestion(
+      courseId,
+      lessonId,
+      quizId,
+      questionId,
+      updatedCourseData
+    );
+
+    // Send the appropriate response
+    res.status(response.status).send({
+      data: response.data || {}, // Send the response data if available
+      message: response.message, // Default message if not provided
+    });
+  } catch (error) {
+    console.error("Error updating Quiz Question:", error.message);
+    res.status(500).send({ data: {}, message: "Error updating Quiz Question" });
+  }
+};
+
+const deleteQuizQuestion = async (req, res) => {
+  try {
+    const { courseId, lessonId, quizId, questionId } = req.params;
+
+    const response = await courseService.deleteQuizQuestion(
+      courseId,
+      lessonId,
+      quizId,
+      questionId
+    );
+
+    res
+      .status(response.status)
+      .send({ data: response.data || {}, message: response.message });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ data: {}, message: "Error deleting Quiz Question" });
+  }
+};
+
 module.exports = {
   createCourse,
   getAllCourses,
   getCoursesByApproveStatus,
+  getCoursesByRejectStatus,
   getCoursesByInstructor,
   getCourseById,
   updateCourseById,
@@ -337,4 +488,10 @@ module.exports = {
   createResource,
   editResource,
   deleteResource,
+  createQuiz,
+  editQuiz,
+  deleteQuiz,
+  createQuizQuestion,
+  editQuizQuestion,
+  deleteQuizQuestion,
 };
